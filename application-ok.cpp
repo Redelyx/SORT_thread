@@ -1,54 +1,58 @@
 #include <iostream>
+#include <iomanip>
 #include <chrono>
 #include <thread>
+#include <sstream>
 #include "executive.h"
 #include "busy_wait.h"
 
 Executive exec(5, 4);
 
-void thread_wcet(int milli){
-	auto last = std::chrono::steady_clock::now();
-	//auto point = std::chrono::steady_clock::now();
-	//point += std::chrono::seconds(sec);
-	//std::this_thread::sleep_until(point);	
+void thread_wcet(int milli, int n){
+	std::ostringstream os, os1;
+	os << "Sono il task numero " << n << ", priorità: " << rt::this_thread::get_priority() << std::endl;
+	std::cout << os.str();
+	auto last = std::chrono::high_resolution_clock::now();
 	busy_wait(milli);
-	auto next = std::chrono::steady_clock::now();	
+	auto next = std::chrono::high_resolution_clock::now();	
 	std::chrono::duration<double, std::milli> elapsed(next - last);
-	std::cout << "Time elapsed: " << elapsed.count() << "ms" << std::endl;
+	os1<< "Task " << n << " Time elapsed: " << elapsed.count() << "ms" << std::endl;
+	std::cout << os1.str();
 	}
 
 void task0()
 {
-	std::cout << "Sono il task numero 1, priorità: " << rt::this_thread::get_priority() << std::endl;
-	thread_wcet(1000);
+	int n = 1;
+	thread_wcet(8, n);
 	/* Custom Code */
 }
 
 void task1()
 {
-	std::cout << "Sono il task numero 2, priorità: " << rt::this_thread::get_priority() << std::endl;
-	thread_wcet(20);
+	int n = 2;
+	thread_wcet(16, n);
 	/* Custom Code */
 }
 
 void task2()
 {
-	std::cout << "Sono il task numero 31, priorità: " << rt::this_thread::get_priority() << std::endl;
-	thread_wcet(10);
+	int n = 3;
+	thread_wcet(8, n);
 	/* Custom Code */
 }
 
 void task3()
 {
-	std::cout << "Sono il task numero 32, priorità: " << rt::this_thread::get_priority() << std::endl;
-	thread_wcet(30);
+	int n = 4;
+	thread_wcet(24, n);
+	exec.ap_task_request();
 	/* Custom Code */
 }
 
 void task4()
 {
-	std::cout << "Sono il task numero 33, priorità: " << rt::this_thread::get_priority() << std::endl;
-	thread_wcet(10);
+	int n = 5;
+	thread_wcet(8, n);
 	/* Custom Code */
 }
 
@@ -56,8 +60,8 @@ void task4()
 
 void ap_task()
 {
-	std::cout << "Sono un task aperiodico, priorità: " << rt::this_thread::get_priority() << std::endl;
-	/* Custom Code */
+	int n = 99;
+	thread_wcet(18, n);
 }
 
 int main()

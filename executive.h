@@ -51,17 +51,22 @@ class Executive
 		{
 			std::function<void()> function;
 			unsigned int wcet;
+			unsigned int rem_wcet;
+			rt::priority priority;
 
 			std::thread thread;
 			std::condition_variable cond;
 			int status;
-
 			/* ... */
 		};
 
-		enum th_state {OFF, READY, RUNNING, FINISHED};
+		enum th_state {IDLE, PENDING, RUNNING};
+
 		std::vector<task_data> p_tasks;
 		task_data ap_task;
+		bool ap_on;
+		bool ap_available;
+		std::mutex mutex;
 
 		
 		static std::chrono::_V2::system_clock::time_point start;
@@ -72,7 +77,6 @@ class Executive
 		const std::chrono::milliseconds unit_time; // durata dell'unita di tempo (quanto temporale)
 
 		/* ... */
-		std::mutex mutex;
 		
 		static void task_function(task_data & task, std::mutex & mutex);
 		
